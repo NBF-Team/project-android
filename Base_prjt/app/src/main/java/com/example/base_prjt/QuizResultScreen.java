@@ -56,7 +56,7 @@ public class QuizResultScreen extends AppCompatActivity {
             resultTextOutlet.setTextColor(Color.parseColor("#E43F3F"));
         }
 
-        userAnswerTextOutlet.setText(MessageFormat.format("Ваш вариант: {0}₽", userAnswer));
+        userAnswerTextOutlet.setText(MessageFormat.format("Ваш вариант: {0,number,#}₽", userAnswer));
 
         if (userAnswer < moneyPerMonth) {
             placeholder = "больше";
@@ -64,10 +64,10 @@ public class QuizResultScreen extends AppCompatActivity {
             placeholder = "меньше";
         }
 
-        realSumPercentTextOutlet.setText(MessageFormat.format("Реальная сумма на {0}% {1}", realSumPercent, placeholder));
+        realSumPercentTextOutlet.setText(MessageFormat.format("Реальная сумма на {0,number,#}% {1}", realSumPercent, placeholder));
         peopleNameTextOutlet.setText(peopleName);
-        yearOfDeclarationTextOutlet.setText(MessageFormat.format("Его доход за месяц {0}г.", yearOfDeclaration));
-        realSumMoneyTextOutlet.setText(MessageFormat.format("{0}₽", realSumMoney));
+        yearOfDeclarationTextOutlet.setText(MessageFormat.format("Его доход за месяц {0,number,#}г.", yearOfDeclaration));
+        realSumMoneyTextOutlet.setText(MessageFormat.format("{0,number,#}₽", realSumMoney));
 
     }
 }
