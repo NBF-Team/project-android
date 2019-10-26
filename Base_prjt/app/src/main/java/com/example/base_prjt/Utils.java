@@ -26,6 +26,7 @@ public class Utils {
         try {
             url = new URL(urlToRead);
         } catch (MalformedURLException e) {
+            System.out.println("Malformed URL: " + e);
             return null;
         }
 
@@ -34,6 +35,7 @@ public class Utils {
         try {
             conn = (HttpURLConnection) url.openConnection();
         } catch (IOException e) {
+            System.out.println("Could not open connection: " + e);
             return null;
         }
 
@@ -42,12 +44,14 @@ public class Utils {
         try {
             conn.setRequestMethod("GET");
         } catch (ProtocolException e) {
+            System.out.println("Could not send get request: " + e);
             return null;
         }
 
         try {
             rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
         } catch (IOException e) {
+            System.out.println("Could not buffered readered: " + e);
             return null;
         }
 
@@ -57,12 +61,14 @@ public class Utils {
                 result.append(line);
             }
         } catch (IOException e) {
+            System.out.println("Could not append lines to result: " + e);
             return null;
         }
 
         try {
             rd.close();
         } catch (IOException e) {
+            System.out.println("Could not close buffer reader: " + e);
             return null;
         }
 
