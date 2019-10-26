@@ -12,6 +12,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager.widget.ViewPager;
 import androidx.appcompat.app.AppCompatActivity;
@@ -47,6 +48,15 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
     }
 
+    @Override
+    public void onBackPressed() {
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        } else {
+            super.onBackPressed();
+        }
+    }
 
     @Override
     public void onClick(View view) {
@@ -56,43 +66,26 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onNavigationItemSelected( MenuItem item) {
+        Fragment fragment = null;
+        Class fragmentClass = null;
         int id = item.getItemId()   ;
 
         if (id == R.id.nav_main_1) {
-            setTitle("Co-Working list");
-            Frag_1_1 fragment = new Frag_1_1();
-            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-            fragmentTransaction.replace(R.id.tabs_1, fragment,"Hello" );
-            fragmentTransaction.addToBackStack("FragmentCow");
-            fragmentTransaction.commit();
+            fragmentClass = Frag_1_1.class;
+
 
         } else if (id == R.id.nav_func_2) {
-            setTitle("Equipment list");
-            Frag_1_1 fragment = new Frag_1_1();
-            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-            fragmentTransaction.replace(R.id.tabs_1, fragment, "FragmentTwo");
-            fragmentTransaction.addToBackStack("FragmentTwo");
-            fragmentTransaction.commit();
+
 
         } else if (id == R.id.nav_func_3) {
-            setTitle("Map");
-            Frag_1_2 fragment = new Frag_1_2();
-            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-            fragmentTransaction.replace(R.id.tabs_1, fragment, "Map");
-            fragmentTransaction.addToBackStack("Map");
-            fragmentTransaction.commit();
+
 
         } else if (id == R.id.nav_func_4) {
-            setTitle("Timeline");
-            Frag_1_3 fragment = new Frag_1_3();
-            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-            fragmentTransaction.replace(R.id.tabs_1, fragment, "Timeline");
-            fragmentTransaction.addToBackStack("Timeline");
-            fragmentTransaction.commit();
+
         }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
-        return false;
+        return true;
     }
 }
