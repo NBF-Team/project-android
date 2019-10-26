@@ -68,7 +68,7 @@
         android:id="@+id/yearOfDeclarationText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Его доход в {}г."
+        android:text="Его доход за месяц {}г."
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"

@@ -1,8 +1,11 @@
 package com.example.base_prjt;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatImageView;
 
 import android.os.Bundle;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 public class QuizResultScreen extends AppCompatActivity {
 
@@ -12,13 +15,21 @@ public class QuizResultScreen extends AppCompatActivity {
     int yearOfDeclaration = 2019;
     int realSumMoney = 121;
     String placeholder = "";
-    int moneyPerMonth;
+    int moneyPerMonth = 123;
+
+    AppCompatImageView resultImageOutlet = findViewById(R.id.resultImage);
+    TextView resultTextOutlet = findViewById(R.id.resultText);
+    TextView userAnswerTextoutlet = findViewById(R.id.userAnswerText);
+    TextView realSumPercentTextOutlet = findViewById(R.id.realSumPercentText);
+    TextView peopleNameTextOutlet = findViewById(R.id.peopleNameText);
+    TextView yearOfDeclarationTextOutlet = findViewById(R.id.yearOfDeclarationText);
+    TextView realSumMoneyTextOutlet = findViewById(R.id.realSumMoneyText);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_quiz_result_screen);
 
-        System.out.println(moneyPerMonth);
+
     }
 }
