@@ -4,10 +4,10 @@
             android:radius="30dp"
     />
     <solid
-            android:color="@color/colorAccent"
+            android:color="@color/bckg_test"
     />
     <size
-            android:width="270dp"
-            android:height="60dp"
+            android:width="200dp"
+            android:height="40dp"
     />
 </shape>
