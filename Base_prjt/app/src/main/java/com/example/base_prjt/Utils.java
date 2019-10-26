@@ -1,5 +1,6 @@
 package com.example.base_prjt;
 
+import android.util.Log;
 import android.util.Pair;
 
 import com.squareup.okhttp.OkHttpClient;
@@ -13,16 +14,26 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import static com.ramotion.paperonboarding.utils.PaperOnboardingEngineDefaults.TAG;
+
 public class Utils {
     static private OkHttpClient client = new OkHttpClient();
 
-    static private String get_req(String url) throws IOException {
+    static public String get_req(String url) {
+        OkHttpClient httpClient = new OkHttpClient();
+
         Request request = new Request.Builder()
                 .url(url)
                 .build();
 
-        Response response = client.newCall(request).execute();
-        return response.body().string();
+        Response response;
+        try {
+            response = httpClient.newCall(request).execute();
+            return response.body().string();
+        } catch (IOException e) {
+            Log.e(TAG, "error in getting response get request okhttp");
+        }
+        return null;
     }
 
     static private JSONObject get_results_array(String name) {
@@ -393,11 +404,7 @@ public class Utils {
             return -1;
         }
 
-        try {
-            res = Utils.get_req("http://34.245.212.90:5000/api/update_ranking?id=" + id + "&name=" + name + "&answered=true");
-        } catch (IOException e) {
-            return -1;
-        }
+        res = Utils.get_req("http://34.245.212.90:5000/api/update_ranking?id=" + id + "&name=" + name + "&answered=true");
 
         return (res.equals("\"Ranking successfully updated\"")) ? 0 : -1;
     }
