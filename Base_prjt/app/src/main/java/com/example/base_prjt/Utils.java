@@ -25,30 +25,45 @@ public class Utils {
         return response.body().string();
     }
 
-    static public int get_id(String name) {
+    static private JSONObject get_results_array(String name) {
         JSONObject res;
-
-        if (name == null) {
-            return -1;
-        }
 
         try {
             res = new JSONObject(Utils.get_req("https://declarator.org/api/v1/search/person-sections/?name=" + name));
         } catch (Exception e) {
-            return -1;
+            System.out.println("Could not get response");
+            return null;
         }
 
         JSONArray results;
         try {
             results = res.getJSONArray("results");
         } catch (JSONException e) {
-            return -1;
+            System.out.println("Could not get from results array");
+            return null;
         }
 
         JSONObject result;
         try {
             result = results.getJSONObject(0);
         } catch (JSONException e) {
+            System.out.println("Could not get 0th element");
+            return null;
+        }
+
+        return result;
+    }
+
+    static public int get_id(String name) {
+        if (name == null) {
+            System.out.println("Name is not defined");
+            return -1;
+        }
+
+        JSONObject result = get_results_array(name);
+
+        if (result == null) {
+            System.out.println("Could not get result");
             return -1;
         }
 
@@ -62,30 +77,17 @@ public class Utils {
     }
 
     static public int get_incomes(String name) {
-        int sum = 0;
-        JSONObject res;
-
         if (name == null) {
+            System.out.println("Name is not defined");
             return -1;
         }
 
-        try {
-            res = new JSONObject(Utils.get_req("https://declarator.org/api/v1/search/person-sections/?name=" + name));
-        } catch (Exception e) {
-            return -1;
-        }
+        int sum = 0;
 
-        JSONArray results;
-        try {
-            results = res.getJSONArray("results");
-        } catch (JSONException e) {
-            return -1;
-        }
+        JSONObject result = get_results_array(name);
 
-        JSONObject result;
-        try {
-            result = results.getJSONObject(0);
-        } catch (JSONException e) {
+        if (result == null) {
+            System.out.println("Could not get result");
             return -1;
         }
 
@@ -93,6 +95,7 @@ public class Utils {
         try {
             sections = result.getJSONArray("sections");
         } catch (JSONException e) {
+            System.out.println("Could not get sections");
             return -1;
         }
 
@@ -101,6 +104,7 @@ public class Utils {
             try {
                 iter = sections.getJSONObject(i);
             } catch (JSONException e) {
+                System.out.println("Could not get sections element");
                 return -1;
             }
 
@@ -108,6 +112,7 @@ public class Utils {
             try {
                 sections2 = iter.getJSONArray("sections");
             } catch (JSONException e) {
+                System.out.println("Could not get sections 2");
                 return -1;
             }
 
@@ -116,6 +121,7 @@ public class Utils {
                 try {
                     iter2 = sections.getJSONObject(j);
                 } catch (JSONException e) {
+                    System.out.println("Could not get sections element 2");
                     return -1;
                 }
 
@@ -123,6 +129,7 @@ public class Utils {
                 try {
                     incomes = iter2.getJSONArray("incomes");
                 } catch (JSONException e) {
+                    System.out.println("Could not get incomes");
                     return -1;
                 }
 
@@ -130,6 +137,7 @@ public class Utils {
                     JSONObject iter3;
                     try {
                         iter3 = incomes.getJSONObject(k);
+                        System.out.println("Could not get incomes elements");
                     } catch (JSONException e) {
                         return -1;
                     }
@@ -137,40 +145,36 @@ public class Utils {
                     try {
                         sum += iter3.getInt("size");
                     } catch (JSONException e) {
+                        System.out.println("Could not get size");
                         return -1;
                     }
                 }
             }
         }
 
+        System.out.println("sum = " + sum);
+
         return sum / 12;
     }
 
     static public String get_vehicles(String name) {
+        if (name == null) {
+            System.out.println("Name is not defined");
+            return null;
+        }
+
         StringBuilder str = new StringBuilder();
+
         JSONObject res;
 
         if (name == null) {
             return null;
         }
 
-        try {
-            res = new JSONObject(Utils.get_req("https://declarator.org/api/v1/search/person-sections/?name=" + name));
-        } catch (Exception e) {
-            return null;
-        }
+        JSONObject result = get_results_array(name);
 
-        JSONArray results;
-        try {
-            results = res.getJSONArray("results");
-        } catch (JSONException e) {
-            return null;
-        }
-
-        JSONObject result;
-        try {
-            result = results.getJSONObject(0);
-        } catch (JSONException e) {
+        if (result == null) {
+            System.out.println("Could not get result");
             return null;
         }
 
@@ -236,30 +240,23 @@ public class Utils {
     }
 
     static public String get_savings(String name) {
+        if (name == null) {
+            System.out.println("Name is not defined");
+            return null;
+        }
+
         StringBuilder str = new StringBuilder();
+
         JSONObject res;
 
         if (name == null) {
             return null;
         }
 
-        try {
-            res = new JSONObject(Utils.get_req("https://declarator.org/api/v1/search/person-sections/?name=" + name));
-        } catch (Exception e) {
-            return null;
-        }
+        JSONObject result = get_results_array(name);
 
-        JSONArray results;
-        try {
-            results = res.getJSONArray("results");
-        } catch (JSONException e) {
-            return null;
-        }
-
-        JSONObject result;
-        try {
-            result = results.getJSONObject(0);
-        } catch (JSONException e) {
+        if (result == null) {
+            System.out.println("Could not get result");
             return null;
         }
 
@@ -317,30 +314,16 @@ public class Utils {
     }
 
     static public String get_real_estates(String name) {
-        StringBuilder str = new StringBuilder();
-        JSONObject res;
-
         if (name == null) {
             return null;
         }
 
-        try {
-            res = new JSONObject(Utils.get_req("https://declarator.org/api/v1/search/person-sections/?name=" + name));
-        } catch (Exception e) {
-            return null;
-        }
+        StringBuilder str = new StringBuilder();
 
-        JSONArray results;
-        try {
-            results = res.getJSONArray("results");
-        } catch (JSONException e) {
-            return null;
-        }
+        JSONObject result = get_results_array(name);
 
-        JSONObject result;
-        try {
-            result = results.getJSONObject(0);
-        } catch (JSONException e) {
+        if (result == null) {
+            System.out.println("Could not get result");
             return null;
         }
 
