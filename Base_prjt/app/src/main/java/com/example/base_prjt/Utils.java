@@ -1,5 +1,7 @@
 package com.example.base_prjt;
 
+import android.util.Pair;
+
 import com.squareup.okhttp.OkHttpClient;
 import com.squareup.okhttp.Request;
 import com.squareup.okhttp.Response;
@@ -9,11 +11,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class Utils {
-    private OkHttpClient client = new OkHttpClient();
+    static private OkHttpClient client = new OkHttpClient();
 
-    private String get_req(String url) throws IOException {
+    static private String get_req(String url) throws IOException {
         Request request = new Request.Builder()
                 .url(url)
                 .build();
@@ -22,7 +25,43 @@ public class Utils {
         return response.body().string();
     }
 
-    public int get_incomes(int id, String name) {
+    static public int get_id(String name) {
+        JSONObject res;
+
+        if (name == null) {
+            return -1;
+        }
+
+        try {
+            res = new JSONObject(Utils.get_req("https://declarator.org/api/v1/search/person-sections/?name=" + name));
+        } catch (Exception e) {
+            return -1;
+        }
+
+        JSONArray results;
+        try {
+            results = res.getJSONArray("results");
+        } catch (JSONException e) {
+            return -1;
+        }
+
+        JSONObject result;
+        try {
+            result = results.getJSONObject(0);
+        } catch (JSONException e) {
+            return -1;
+        }
+
+        try {
+            int id = result.getInt("id");
+            return id;
+        } catch (JSONException e) {
+            return -1;
+        }
+
+    }
+
+    static public int get_incomes(String name) {
         int sum = 0;
         JSONObject res;
 
@@ -31,37 +70,28 @@ public class Utils {
         }
 
         try {
-            res = new JSONObject(this.get_req("https://declarator.org/api/v1/search/person-sections/?name=" + name));
-        } catch (JSONException e) {
-            return -1;
-        } catch (IOException e) {
+            res = new JSONObject(Utils.get_req("https://declarator.org/api/v1/search/person-sections/?name=" + name));
+        } catch (Exception e) {
             return -1;
         }
 
-        JSONObject results;
+        JSONArray results;
         try {
-            results = res.getJSONObject("results");
+            results = res.getJSONArray("results");
         } catch (JSONException e) {
             return -1;
         }
 
-        int parsed_id;
-        String parsed_name;
-
+        JSONObject result;
         try {
-            parsed_id = results.getInt("id");
-            parsed_name = results.getString("family_name");
+            result = results.getJSONObject(0);
         } catch (JSONException e) {
-            return -1;
-        }
-
-        if (id != parsed_id || !name.equals(parsed_name)) {
             return -1;
         }
 
         JSONArray sections;
         try {
-            sections = results.getJSONArray("sections");
+            sections = result.getJSONArray("sections");
         } catch (JSONException e) {
             return -1;
         }
@@ -69,7 +99,7 @@ public class Utils {
         for (int i = 0; i < sections.length(); i++) {
             JSONObject iter;
             try {
-                iter = (JSONObject) sections.get(i);
+                iter = sections.getJSONObject(i);
             } catch (JSONException e) {
                 return -1;
             }
@@ -84,7 +114,7 @@ public class Utils {
             for (int j = 0; j < sections2.length(); j++) {
                 JSONObject iter2;
                 try {
-                    iter2 = (JSONObject) sections.get(j);
+                    iter2 = sections.getJSONObject(j);
                 } catch (JSONException e) {
                     return -1;
                 }
@@ -99,7 +129,7 @@ public class Utils {
                 for (int k = 0; k < incomes.length(); k++) {
                     JSONObject iter3;
                     try {
-                        iter3 = (JSONObject) incomes.get(k);
+                        iter3 = incomes.getJSONObject(k);
                     } catch (JSONException e) {
                         return -1;
                     }
@@ -116,7 +146,7 @@ public class Utils {
         return sum / 12;
     }
 
-    public String get_vehicles(int id, String name) {
+    static public String get_vehicles(String name) {
         StringBuilder str = new StringBuilder();
         JSONObject res;
 
@@ -125,37 +155,28 @@ public class Utils {
         }
 
         try {
-            res = new JSONObject(this.get_req("https://declarator.org/api/v1/search/person-sections/?name=" + name));
-        } catch (JSONException e) {
-            return null;
-        } catch (IOException e) {
+            res = new JSONObject(Utils.get_req("https://declarator.org/api/v1/search/person-sections/?name=" + name));
+        } catch (Exception e) {
             return null;
         }
 
-        JSONObject results;
+        JSONArray results;
         try {
-            results = res.getJSONObject("results");
+            results = res.getJSONArray("results");
         } catch (JSONException e) {
             return null;
         }
 
-        int parsed_id;
-        String parsed_name;
-
+        JSONObject result;
         try {
-            parsed_id = results.getInt("id");
-            parsed_name = results.getString("family_name");
+            result = results.getJSONObject(0);
         } catch (JSONException e) {
-            return null;
-        }
-
-        if (id != parsed_id || !name.equals(parsed_name)) {
             return null;
         }
 
         JSONArray sections;
         try {
-            sections = results.getJSONArray("sections");
+            sections = result.getJSONArray("sections");
         } catch (JSONException e) {
             return null;
         }
@@ -163,7 +184,7 @@ public class Utils {
         for (int i = 0; i < sections.length(); i++) {
             JSONObject iter;
             try {
-                iter = (JSONObject) sections.get(i);
+                iter = sections.getJSONObject(i);
             } catch (JSONException e) {
                 return null;
             }
@@ -178,7 +199,7 @@ public class Utils {
             for (int j = 0; j < sections2.length(); j++) {
                 JSONObject iter2;
                 try {
-                    iter2 = (JSONObject) sections.get(j);
+                    iter2 = sections.getJSONObject(j);
                 } catch (JSONException e) {
                     return null;
                 }
@@ -193,7 +214,7 @@ public class Utils {
                 for (int k = 0; k < vehicles.length(); k++) {
                     JSONObject iter3;
                     try {
-                        iter3 = (JSONObject) vehicles.get(k);
+                        iter3 = vehicles.getJSONObject(k);
                     } catch (JSONException e) {
                         return null;
                     }
@@ -214,7 +235,7 @@ public class Utils {
         return str.toString();
     }
 
-    public String get_savings(int id, String name) {
+    static public String get_savings(String name) {
         StringBuilder str = new StringBuilder();
         JSONObject res;
 
@@ -223,37 +244,28 @@ public class Utils {
         }
 
         try {
-            res = new JSONObject(this.get_req("https://declarator.org/api/v1/search/person-sections/?name=" + name));
-        } catch (JSONException e) {
-            return null;
-        } catch (IOException e) {
+            res = new JSONObject(Utils.get_req("https://declarator.org/api/v1/search/person-sections/?name=" + name));
+        } catch (Exception e) {
             return null;
         }
 
-        JSONObject results;
+        JSONArray results;
         try {
-            results = res.getJSONObject("results");
+            results = res.getJSONArray("results");
         } catch (JSONException e) {
             return null;
         }
 
-        int parsed_id;
-        String parsed_name;
-
+        JSONObject result;
         try {
-            parsed_id = results.getInt("id");
-            parsed_name = results.getString("family_name");
+            result = results.getJSONObject(0);
         } catch (JSONException e) {
-            return null;
-        }
-
-        if (id != parsed_id || !name.equals(parsed_name)) {
             return null;
         }
 
         JSONArray sections;
         try {
-            sections = results.getJSONArray("sections");
+            sections = result.getJSONArray("sections");
         } catch (JSONException e) {
             return null;
         }
@@ -261,7 +273,7 @@ public class Utils {
         for (int i = 0; i < sections.length(); i++) {
             JSONObject iter;
             try {
-                iter = (JSONObject) sections.get(i);
+                iter = sections.getJSONObject(i);
             } catch (JSONException e) {
                 return null;
             }
@@ -276,7 +288,7 @@ public class Utils {
             for (int j = 0; j < sections2.length(); j++) {
                 JSONObject iter2;
                 try {
-                    iter2 = (JSONObject) sections.get(j);
+                    iter2 = sections.getJSONObject(j);
                 } catch (JSONException e) {
                     return null;
                 }
@@ -291,7 +303,7 @@ public class Utils {
                 for (int k = 0; k < savings.length(); k++) {
                     JSONObject iter3;
                     try {
-                        iter3 = (JSONObject) savings.get(k);
+                        iter3 = savings.getJSONObject(k);
                     } catch (JSONException e) {
                         return null;
                     }
@@ -304,7 +316,7 @@ public class Utils {
         return str.toString();
     }
 
-    public String get_real_estates(int id, String name) {
+    static public String get_real_estates(String name) {
         StringBuilder str = new StringBuilder();
         JSONObject res;
 
@@ -313,37 +325,28 @@ public class Utils {
         }
 
         try {
-            res = new JSONObject(this.get_req("https://declarator.org/api/v1/search/person-sections/?name=" + name));
-        } catch (JSONException e) {
-            return null;
-        } catch (IOException e) {
+            res = new JSONObject(Utils.get_req("https://declarator.org/api/v1/search/person-sections/?name=" + name));
+        } catch (Exception e) {
             return null;
         }
 
-        JSONObject results;
+        JSONArray results;
         try {
-            results = res.getJSONObject("results");
+            results = res.getJSONArray("results");
         } catch (JSONException e) {
             return null;
         }
 
-        int parsed_id;
-        String parsed_name;
-
+        JSONObject result;
         try {
-            parsed_id = results.getInt("id");
-            parsed_name = results.getString("family_name");
+            result = results.getJSONObject(0);
         } catch (JSONException e) {
-            return null;
-        }
-
-        if (id != parsed_id || !name.equals(parsed_name)) {
             return null;
         }
 
         JSONArray sections;
         try {
-            sections = results.getJSONArray("sections");
+            sections = result.getJSONArray("sections");
         } catch (JSONException e) {
             return null;
         }
@@ -351,7 +354,7 @@ public class Utils {
         for (int i = 0; i < sections.length(); i++) {
             JSONObject iter;
             try {
-                iter = (JSONObject) sections.get(i);
+                iter = sections.getJSONObject(i);
             } catch (JSONException e) {
                 return null;
             }
@@ -366,7 +369,7 @@ public class Utils {
             for (int j = 0; j < sections2.length(); j++) {
                 JSONObject iter2;
                 try {
-                    iter2 = (JSONObject) sections.get(j);
+                    iter2 = sections.getJSONObject(j);
                 } catch (JSONException e) {
                     return null;
                 }
@@ -381,7 +384,7 @@ public class Utils {
                 for (int k = 0; k < real_estates.length(); k++) {
                     JSONObject iter3;
                     try {
-                        iter3 = (JSONObject) real_estates.get(k);
+                        iter3 = real_estates.getJSONObject(k);
                     } catch (JSONException e) {
                         return null;
                     }
@@ -399,7 +402,7 @@ public class Utils {
         return str.toString();
     }
 
-    public int update_rankings(int id, String name) {
+    static public int update_rankings(int id, String name) {
         StringBuilder str = new StringBuilder();
         String res;
 
@@ -408,7 +411,7 @@ public class Utils {
         }
 
         try {
-            res = this.get_req("http://34.245.212.90:5000/api/update_ranking?id=" + id + "&name=" + name + "&answered=true");
+            res = Utils.get_req("http://34.245.212.90:5000/api/update_ranking?id=" + id + "&name=" + name + "&answered=true");
         } catch (IOException e) {
             return -1;
         }
@@ -416,11 +419,25 @@ public class Utils {
         return (res.equals("\"Ranking successfully updated\"")) ? 0 : -1;
     }
 
-    public String get_ranking() {
+    static public ArrayList<Pair<String,Integer>> get_ranking() {
+        JSONArray obj;
         try {
-            return this.get_req("http://34.245.212.90:5000/api/ranking");
-        } catch (IOException e) {
+            obj = new JSONArray(Utils.get_req("http://34.245.212.90:5000/api/ranking"));
+        } catch (Exception e) {
             return null;
         }
+
+        ArrayList<Pair<String, Integer>> list = new ArrayList<>();
+
+        for (int i = 0; i < obj.length(); i++) {
+            try {
+                list.add(new Pair<>(obj.getJSONArray(i).getString(0),
+                                    obj.getJSONArray(i).getInt(1)));
+            } catch (JSONException e) {
+                return null;
+            }
+        }
+
+        return list;
     }
 }
