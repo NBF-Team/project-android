@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Base_prjt</string>
+    <string name="tab_text_1">Tab 1</string>
+    <string name="tab_text_2">Tab 2</string>
+    <string name="title_activity_first_acty">FirstActy</string>
+    <string name="first_page_1">Hello!</string>
+    <string name="first_page_2">Chinder</string>
+    <string name="button_gt">Go play!</string>
+    <string name="todo">TODO</string>
+
+</resources>
