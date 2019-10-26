@@ -3,21 +3,31 @@ package com.example.base_prjt;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatImageView;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import java.text.MessageFormat;
 
 public class QuizResultScreen extends AppCompatActivity {
 
-    int userAnswer = 130; //ответ пользователя
+    int userAnswer = 1300; //ответ пользователя
     double realSumPercent = 12.2; //на сколько процентов его реальные доходы больше/меньше
     String peopleName = "Путин В.В."; //ФИО чиновника
     int yearOfDeclaration = 2019; //год подачи декларации
     int realSumMoney = 121973; //размер всего состояния
     int moneyPerMonth = 123; //доход в месяц
     String placeholder = ""; // больше/меньше
+
+    public void createNewSameActivity (View view){
+//        get new data from server
+        QuizResultScreen.this.finish();
+        Intent intent = new Intent (this, QuizResultScreen.class);
+        startActivity(intent);
+    }
 
 
 
