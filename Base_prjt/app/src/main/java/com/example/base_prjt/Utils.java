@@ -3,37 +3,70 @@ package com.example.base_prjt;
 import android.util.Log;
 import android.util.Pair;
 
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.Request;
-import com.squareup.okhttp.Response;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.net.URL;
 import java.util.ArrayList;
 
 import static com.ramotion.paperonboarding.utils.PaperOnboardingEngineDefaults.TAG;
 
 public class Utils {
-    static private OkHttpClient client = new OkHttpClient();
+    static public String get_req(String urlToRead) {
+        StringBuilder result = new StringBuilder();
+        URL url;
 
-    static public String get_req(String url) {
-        OkHttpClient httpClient = new OkHttpClient();
-
-        Request request = new Request.Builder()
-                .url(url)
-                .build();
-
-        Response response;
         try {
-            response = httpClient.newCall(request).execute();
-            return response.body().string();
-        } catch (IOException e) {
-            Log.e(TAG, "error in getting response get request okhttp");
+            url = new URL(urlToRead);
+        } catch (MalformedURLException e) {
+            return null;
         }
-        return null;
+
+        HttpURLConnection conn;
+
+        try {
+            conn = (HttpURLConnection) url.openConnection();
+        } catch (IOException e) {
+            return null;
+        }
+
+        BufferedReader rd;
+
+        try {
+            conn.setRequestMethod("GET");
+        } catch (ProtocolException e) {
+            return null;
+        }
+
+        try {
+            rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+        } catch (IOException e) {
+            return null;
+        }
+
+        String line;
+        try {
+            while ((line = rd.readLine()) != null) {
+                result.append(line);
+            }
+        } catch (IOException e) {
+            return null;
+        }
+
+        try {
+            rd.close();
+        } catch (IOException e) {
+            return null;
+        }
+
+        return result.toString();
     }
 
     static private JSONObject get_results_array(String name) {
