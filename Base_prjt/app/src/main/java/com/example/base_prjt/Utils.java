@@ -3,475 +3,625 @@ package com.example.base_prjt;
 import android.util.Log;
 import android.util.Pair;
 
+import com.squareup.okhttp.Callback;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
-import java.net.URL;
 import java.util.ArrayList;
 
 import static com.ramotion.paperonboarding.utils.PaperOnboardingEngineDefaults.TAG;
 
 public class Utils {
-    static public String get_req(String urlToRead) {
-        StringBuilder result = new StringBuilder();
-        URL url;
+    int mId;
 
-        try {
-            url = new URL(urlToRead);
-            System.out.println("URL is OK => " + url);
-        } catch (Exception e) {
-            System.out.println("Malformed URL: " + e);
-            return null;
-        }
+    public int get_id(String name) {
+        OkHttpClient client = new OkHttpClient();
 
-        HttpURLConnection conn;
+        Request request = new Request.Builder()
+                .url("https://declarator.org/api/v1/search/person-sections/?name=" + name)
+                .build();
 
-        try {
-            conn = (HttpURLConnection) url.openConnection();
-            System.out.println("Connection is normally opened => " + conn);
-        } catch (Exception e) {
-            System.out.println("Could not open connection: " + e);
-            return null;
-        }
-
-        BufferedReader rd;
-
-        try {
-            conn.setRequestMethod("GET");
-            System.out.println("GET request is normally sent");
-        } catch (Exception e) {
-            System.out.println("Could not send get request: " + e);
-            return null;
-        }
-
-        try {
-            rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-            System.out.println("Buffer reader is OK => " + rd);
-        } catch (Exception e) {
-            System.out.println("Could not buffered readered: " + e);
-            return null;
-        }
-
-        String line;
-        try {
-            while ((line = rd.readLine()) != null) {
-                result.append(line);
-            }
-            System.out.println("Line is correct => " + line);
-        } catch (Exception e) {
-            System.out.println("Could not append lines to result: " + e);
-            return null;
-        }
-
-        try {
-            rd.close();
-        } catch (Exception e) {
-            System.out.println("Could not close buffer reader: " + e);
-            return null;
-        }
-
-        return result.toString();
-    }
-
-    static private JSONObject get_results_array(String name) {
-        JSONObject res;
-
-        try {
-            res = new JSONObject(Utils.get_req("https://declarator.org/api/v1/search/person-sections/?name=" + name));
-        } catch (Exception e) {
-            System.out.println("Could not get response");
-            return null;
-        }
-
-        JSONArray results;
-        try {
-            results = res.getJSONArray("results");
-        } catch (JSONException e) {
-            System.out.println("Could not get from results array");
-            return null;
-        }
-
-        JSONObject result;
-        try {
-            result = results.getJSONObject(0);
-        } catch (JSONException e) {
-            System.out.println("Could not get 0th element");
-            return null;
-        }
-
-        return result;
-    }
-
-    static public int get_id(String name) {
-        if (name == null) {
-            System.out.println("Name is not defined");
-            return -1;
-        }
-
-        JSONObject result = get_results_array(name);
-
-        if (result == null) {
-            System.out.println("Could not get result");
-            return -1;
-        }
-
-        try {
-            int id = result.getInt("id");
-            return id;
-        } catch (JSONException e) {
-            return -1;
-        }
-
-    }
-
-    static public int get_incomes(String name) {
-        if (name == null) {
-            System.out.println("Name is not defined");
-            return -1;
-        }
-
-        int sum = 0;
-
-        JSONObject result = get_results_array(name);
-
-        if (result == null) {
-            System.out.println("Could not get result");
-            return -1;
-        }
-
-        JSONArray sections;
-        try {
-            sections = result.getJSONArray("sections");
-        } catch (JSONException e) {
-            System.out.println("Could not get sections");
-            return -1;
-        }
-
-        for (int i = 0; i < sections.length(); i++) {
-            JSONObject iter;
-            try {
-                iter = sections.getJSONObject(i);
-            } catch (JSONException e) {
-                System.out.println("Could not get sections element");
-                return -1;
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Request request, IOException e) {
+                e.printStackTrace();
+                Log.d(TAG, "Request Failed.");
             }
 
-            JSONArray sections2;
-            try {
-                sections2 = iter.getJSONArray("sections");
-            } catch (JSONException e) {
-                System.out.println("Could not get sections 2");
-                return -1;
-            }
-
-            for (int j = 0; j < sections2.length(); j++) {
-                JSONObject iter2;
-                try {
-                    iter2 = sections.getJSONObject(j);
-                } catch (JSONException e) {
-                    System.out.println("Could not get sections element 2");
-                    return -1;
+            @Override
+            public void onResponse(Response response) throws IOException {
+                if (!response.isSuccessful()) {
+                    throw new IOException("Error : " + response);
+                } else {
+                    Log.d(TAG, "Request Successful.");
                 }
 
-                JSONArray incomes;
+                final JSONObject data;
                 try {
-                    incomes = iter2.getJSONArray("incomes");
+                    data = new JSONObject(response.body().string());
                 } catch (JSONException e) {
-                    System.out.println("Could not get incomes");
-                    return -1;
+                    throw new IOException("Error : " + e);
                 }
 
-                for (int k = 0; k < incomes.length(); k++) {
-                    JSONObject iter3;
-                    try {
-                        iter3 = incomes.getJSONObject(k);
-                        System.out.println("Could not get incomes elements");
-                    } catch (JSONException e) {
-                        return -1;
-                    }
+                JSONArray results;
+                try {
+                    results = data.getJSONArray("results");
+                } catch (JSONException e) {
+                    throw new IOException("Error : " + e);
+                }
 
+                JSONObject result;
+                try {
+                    result = results.getJSONObject(0);
+                } catch (JSONException e) {
+                    throw new IOException("Error : " + e);
+                }
+
+                try {
+                    mId = result.getInt("id");
+                } catch (JSONException e) {
+                    throw new IOException("Error : " + e);
+                }
+            }
+        });
+
+        return mId;
+    }
+
+    ArrayList<Pair<String,Integer>> mSearchResult = new ArrayList<>();
+
+    public ArrayList<Pair<String,Integer>> get_search_result(final String name) {
+        OkHttpClient client = new OkHttpClient();
+
+        Request request = new Request.Builder()
+                .url("https://declarator.org/api/v1/search/person-sections/?name=" + name)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Request request, IOException e) {
+                e.printStackTrace();
+                Log.d(TAG, "Request Failed.");
+            }
+
+            @Override
+            public void onResponse(Response response) throws IOException {
+                if (!response.isSuccessful()) {
+                    throw new IOException("Error : " + response);
+                } else {
+                    Log.d(TAG, "Request Successful.");
+                }
+
+                final JSONObject data;
+                try {
+                    data = new JSONObject(response.body().string());
+                } catch (JSONException e) {
+                    throw new IOException("Error : " + e);
+                }
+
+                JSONArray results;
+                try {
+                    results = data.getJSONArray("results");
+                } catch (JSONException e) {
+                    throw new IOException("Error : " + e);
+                }
+
+                for (int i = 0; i < results.length(); i++) {
                     try {
-                        sum += iter3.getInt("size");
+                        mSearchResult.add(new Pair<>(results.getJSONObject(i).getString("family_name"),
+                                          get_incomes(name)));
                     } catch (JSONException e) {
-                        System.out.println("Could not get size");
-                        return -1;
+                        throw new IOException("Error : " + e);
                     }
                 }
             }
-        }
+        });
 
-        System.out.println("sum = " + sum);
-
-        return sum / 12;
+        return mSearchResult;
     }
 
-    static public String get_vehicles(String name) {
-        if (name == null) {
-            System.out.println("Name is not defined");
-            return null;
-        }
+    int mSum;
 
-        StringBuilder str = new StringBuilder();
+    public int get_incomes(String name) {
+        mSum = 0;
 
-        JSONObject res;
+        OkHttpClient client = new OkHttpClient();
 
-        if (name == null) {
-            return null;
-        }
+        Request request = new Request.Builder()
+                .url("https://declarator.org/api/v1/search/person-sections/?name=" + name)
+                .build();
 
-        JSONObject result = get_results_array(name);
-
-        if (result == null) {
-            System.out.println("Could not get result");
-            return null;
-        }
-
-        JSONArray sections;
-        try {
-            sections = result.getJSONArray("sections");
-        } catch (JSONException e) {
-            return null;
-        }
-
-        for (int i = 0; i < sections.length(); i++) {
-            JSONObject iter;
-            try {
-                iter = sections.getJSONObject(i);
-            } catch (JSONException e) {
-                return null;
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Request request, IOException e) {
+                e.printStackTrace();
+                Log.d(TAG, "Request Failed.");
             }
 
-            JSONArray sections2;
-            try {
-                sections2 = iter.getJSONArray("sections");
-            } catch (JSONException e) {
-                return null;
-            }
-
-            for (int j = 0; j < sections2.length(); j++) {
-                JSONObject iter2;
-                try {
-                    iter2 = sections.getJSONObject(j);
-                } catch (JSONException e) {
-                    return null;
+            @Override
+            public void onResponse(Response response) throws IOException {
+                if (!response.isSuccessful()) {
+                    throw new IOException("Error : " + response);
+                } else {
+                    Log.d(TAG, "Request Successful.");
                 }
 
-                JSONArray vehicles;
+                final JSONObject data;
                 try {
-                    vehicles = iter2.getJSONArray("incomes");
+                    data = new JSONObject(response.body().string());
                 } catch (JSONException e) {
-                    return null;
+                    throw new IOException("Error : " + e);
                 }
 
-                for (int k = 0; k < vehicles.length(); k++) {
-                    JSONObject iter3;
+                JSONArray results;
+                try {
+                    results = data.getJSONArray("results");
+                } catch (JSONException e) {
+                    throw new IOException("Error : " + e);
+                }
+
+                JSONObject result;
+                try {
+                    result = results.getJSONObject(0);
+                } catch (JSONException e) {
+                    throw new IOException("Error : " + e);
+                }
+
+                JSONArray sections;
+                try {
+                    sections = result.getJSONArray("sections");
+                } catch (JSONException e) {
+                    throw new IOException("Error : " + e);
+                }
+
+                for (int i = 0; i < sections.length(); i++) {
+                    JSONObject iter;
                     try {
-                        iter3 = vehicles.getJSONObject(k);
+                        iter = sections.getJSONObject(i);
                     } catch (JSONException e) {
-                        return null;
+                        throw new IOException("Error : " + e);
                     }
 
+                    JSONArray sections2;
                     try {
-                        String relative = iter3.getString("relative");
-                        str.append(iter3.getString("brand.name") + " " + iter3.getInt("manufacture_year"));
-                        if (relative != null) {
-                            str.append(" (принадлежит " + relative + ")\n");
+                        sections2 = iter.getJSONArray("sections");
+                    } catch (JSONException e) {
+                        throw new IOException("Error : " + e);
+                    }
+
+                    for (int j = 0; j < sections2.length(); j++) {
+                        JSONObject iter2;
+                        try {
+                            iter2 = sections.getJSONObject(j);
+                        } catch (JSONException e) {
+                            throw new IOException("Error : " + e);
                         }
-                    } catch (JSONException e) {
-                        return null;
+
+                        JSONArray incomes;
+                        try {
+                            incomes = iter2.getJSONArray("incomes");
+                        } catch (JSONException e) {
+                            throw new IOException("Error : " + e);
+                        }
+
+                        for (int k = 0; k < incomes.length(); k++) {
+                            JSONObject iter3;
+                            try {
+                                iter3 = incomes.getJSONObject(k);
+                                System.out.println("Could not get incomes elements");
+                            } catch (JSONException e) {
+                                throw new IOException("Error : " + e);
+                            }
+
+                            try {
+                                mSum += iter3.getInt("size");
+                            } catch (JSONException e) {
+                                System.out.println("Could not get size");
+                                throw new IOException("Error : " + e);
+                            }
+                        }
                     }
                 }
             }
-        }
+        });
 
-        return str.toString();
+        return mSum / 12;
     }
 
-    static public String get_savings(String name) {
-        if (name == null) {
-            System.out.println("Name is not defined");
-            return null;
-        }
+    StringBuilder mVehivles;
 
-        StringBuilder str = new StringBuilder();
+    public String get_vehicles(String name) {
+        OkHttpClient client = new OkHttpClient();
 
-        JSONObject res;
+        Request request = new Request.Builder()
+                .url("https://declarator.org/api/v1/search/person-sections/?name=" + name)
+                .build();
 
-        if (name == null) {
-            return null;
-        }
-
-        JSONObject result = get_results_array(name);
-
-        if (result == null) {
-            System.out.println("Could not get result");
-            return null;
-        }
-
-        JSONArray sections;
-        try {
-            sections = result.getJSONArray("sections");
-        } catch (JSONException e) {
-            return null;
-        }
-
-        for (int i = 0; i < sections.length(); i++) {
-            JSONObject iter;
-            try {
-                iter = sections.getJSONObject(i);
-            } catch (JSONException e) {
-                return null;
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Request request, IOException e) {
+                e.printStackTrace();
+                Log.d(TAG, "Request Failed.");
             }
 
-            JSONArray sections2;
-            try {
-                sections2 = iter.getJSONArray("sections");
-            } catch (JSONException e) {
-                return null;
-            }
-
-            for (int j = 0; j < sections2.length(); j++) {
-                JSONObject iter2;
-                try {
-                    iter2 = sections.getJSONObject(j);
-                } catch (JSONException e) {
-                    return null;
+            @Override
+            public void onResponse(Response response) throws IOException {
+                if (!response.isSuccessful()) {
+                    throw new IOException("Error : " + response);
+                } else {
+                    Log.d(TAG, "Request Successful.");
                 }
 
-                JSONArray savings;
+                final JSONObject data;
                 try {
-                    savings = iter2.getJSONArray("savings");
+                    data = new JSONObject(response.body().string());
                 } catch (JSONException e) {
-                    return null;
+                    throw new IOException("Error : " + e);
                 }
 
-                for (int k = 0; k < savings.length(); k++) {
-                    JSONObject iter3;
+                JSONArray results;
+                try {
+                    results = data.getJSONArray("results");
+                } catch (JSONException e) {
+                    throw new IOException("Error : " + e);
+                }
+
+                JSONObject result;
+                try {
+                    result = results.getJSONObject(0);
+                } catch (JSONException e) {
+                    throw new IOException("Error : " + e);
+                }
+
+                JSONArray sections;
+                try {
+                    sections = result.getJSONArray("sections");
+                } catch (JSONException e) {
+                    throw new IOException("Error : " + e);
+                }
+
+                for (int i = 0; i < sections.length(); i++) {
+                    JSONObject iter;
                     try {
-                        iter3 = savings.getJSONObject(k);
+                        iter = sections.getJSONObject(i);
                     } catch (JSONException e) {
-                        return null;
+                        throw new IOException("Error : " + e);
                     }
 
-                    str.append(iter3 + "\n");
-                }
-            }
-        }
-
-        return str.toString();
-    }
-
-    static public String get_real_estates(String name) {
-        if (name == null) {
-            return null;
-        }
-
-        StringBuilder str = new StringBuilder();
-
-        JSONObject result = get_results_array(name);
-
-        if (result == null) {
-            System.out.println("Could not get result");
-            return null;
-        }
-
-        JSONArray sections;
-        try {
-            sections = result.getJSONArray("sections");
-        } catch (JSONException e) {
-            return null;
-        }
-
-        for (int i = 0; i < sections.length(); i++) {
-            JSONObject iter;
-            try {
-                iter = sections.getJSONObject(i);
-            } catch (JSONException e) {
-                return null;
-            }
-
-            JSONArray sections2;
-            try {
-                sections2 = iter.getJSONArray("sections");
-            } catch (JSONException e) {
-                return null;
-            }
-
-            for (int j = 0; j < sections2.length(); j++) {
-                JSONObject iter2;
-                try {
-                    iter2 = sections.getJSONObject(j);
-                } catch (JSONException e) {
-                    return null;
-                }
-
-                JSONArray real_estates;
-                try {
-                    real_estates = iter2.getJSONArray("real_estates");
-                } catch (JSONException e) {
-                    return null;
-                }
-
-                for (int k = 0; k < real_estates.length(); k++) {
-                    JSONObject iter3;
+                    JSONArray sections2;
                     try {
-                        iter3 = real_estates.getJSONObject(k);
+                        sections2 = iter.getJSONArray("sections");
                     } catch (JSONException e) {
-                        return null;
+                        throw new IOException("Error : " + e);
                     }
 
-                    try {
-                        str.append(iter3.getString("own_type.name") + " собственность: " +
-                                iter3.getString("type.name") + " размером " + iter3.getInt("square") + " м2\n");
-                    } catch (JSONException e) {
-                        return null;
+                    for (int j = 0; j < sections2.length(); j++) {
+                        JSONObject iter2;
+                        try {
+                            iter2 = sections.getJSONObject(j);
+                        } catch (JSONException e) {
+                            throw new IOException("Error : " + e);
+                        }
+
+                        JSONArray vehicles;
+                        try {
+                            vehicles = iter2.getJSONArray("incomes");
+                        } catch (JSONException e) {
+                            throw new IOException("Error : " + e);
+                        }
+
+                        for (int k = 0; k < vehicles.length(); k++) {
+                            JSONObject iter3;
+                            try {
+                                iter3 = vehicles.getJSONObject(k);
+                            } catch (JSONException e) {
+                                throw new IOException("Error : " + e);
+                            }
+
+                            try {
+                                String relative = iter3.getString("relative");
+                                mVehivles.append(iter3.getString("brand.name") + " " + iter3.getInt("manufacture_year"));
+                                if (relative != null) {
+                                    mVehivles.append(" (принадлежит " + relative + ")\n");
+                                }
+                            } catch (JSONException e) {
+                                throw new IOException("Error : " + e);
+                            }
+                        }
                     }
                 }
             }
-        }
+        });
 
-        return str.toString();
+        return mVehivles.toString();
     }
 
-    static public int update_rankings(int id, String name) {
-        StringBuilder str = new StringBuilder();
-        String res;
+    StringBuilder mSavings;
 
-        if (name == null) {
-            return -1;
-        }
+    public String get_savings(String name) {
+        OkHttpClient client = new OkHttpClient();
 
-        res = Utils.get_req("http://34.245.212.90:5000/api/update_ranking?id=" + id + "&name=" + name + "&answered=true");
+        Request request = new Request.Builder()
+                .url("https://declarator.org/api/v1/search/person-sections/?name=" + name)
+                .build();
 
-        return (res.equals("\"Ranking successfully updated\"")) ? 0 : -1;
-    }
-
-    static public ArrayList<Pair<String,Integer>> get_ranking() {
-        JSONArray obj;
-        try {
-            obj = new JSONArray(Utils.get_req("http://34.245.212.90:5000/api/ranking"));
-        } catch (Exception e) {
-            return null;
-        }
-
-        ArrayList<Pair<String, Integer>> list = new ArrayList<>();
-
-        for (int i = 0; i < obj.length(); i++) {
-            try {
-                list.add(new Pair<>(obj.getJSONArray(i).getString(0),
-                                    obj.getJSONArray(i).getInt(1)));
-            } catch (JSONException e) {
-                return null;
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Request request, IOException e) {
+                e.printStackTrace();
+                Log.d(TAG, "Request Failed.");
             }
-        }
 
-        return list;
+            @Override
+            public void onResponse(Response response) throws IOException {
+                if (!response.isSuccessful()) {
+                    throw new IOException("Error : " + response);
+                } else {
+                    Log.d(TAG, "Request Successful.");
+                }
+
+                final JSONObject data;
+                try {
+                    data = new JSONObject(response.body().string());
+                } catch (JSONException e) {
+                    throw new IOException("Error : " + e);
+                }
+
+                JSONArray results;
+                try {
+                    results = data.getJSONArray("results");
+                } catch (JSONException e) {
+                    throw new IOException("Error : " + e);
+                }
+
+                JSONObject result;
+                try {
+                    result = results.getJSONObject(0);
+                } catch (JSONException e) {
+                    throw new IOException("Error : " + e);
+                }
+
+                JSONArray sections;
+                try {
+                    sections = result.getJSONArray("sections");
+                } catch (JSONException e) {
+                    throw new IOException("Error : " + e);
+                }
+
+                for (int i = 0; i < sections.length(); i++) {
+                    JSONObject iter;
+                    try {
+                        iter = sections.getJSONObject(i);
+                    } catch (JSONException e) {
+                        throw new IOException("Error : " + e);
+                    }
+
+                    JSONArray sections2;
+                    try {
+                        sections2 = iter.getJSONArray("sections");
+                    } catch (JSONException e) {
+                        throw new IOException("Error : " + e);
+                    }
+
+                    for (int j = 0; j < sections2.length(); j++) {
+                        JSONObject iter2;
+                        try {
+                            iter2 = sections.getJSONObject(j);
+                        } catch (JSONException e) {
+                            throw new IOException("Error : " + e);
+                        }
+
+                        JSONArray savings;
+                        try {
+                            savings = iter2.getJSONArray("savings");
+                        } catch (JSONException e) {
+                            throw new IOException("Error : " + e);
+                        }
+
+                        for (int k = 0; k < savings.length(); k++) {
+                            JSONObject iter3;
+                            try {
+                                iter3 = savings.getJSONObject(k);
+                            } catch (JSONException e) {
+                                throw new IOException("Error : " + e);
+                            }
+
+                            mSavings.append(iter3 + "\n");
+                        }
+                    }
+                }
+            }
+        });
+
+        return mSavings.toString();
+    }
+
+    StringBuilder mReadEstates;
+
+    public String get_real_estates(String name) {
+        OkHttpClient client = new OkHttpClient();
+
+        Request request = new Request.Builder()
+                .url("https://declarator.org/api/v1/search/person-sections/?name=" + name)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Request request, IOException e) {
+                e.printStackTrace();
+                Log.d(TAG, "Request Failed.");
+            }
+
+            @Override
+            public void onResponse(Response response) throws IOException {
+                if (!response.isSuccessful()) {
+                    throw new IOException("Error : " + response);
+                } else {
+                    Log.d(TAG, "Request Successful.");
+                }
+
+                final JSONObject data;
+                try {
+                    data = new JSONObject(response.body().string());
+                } catch (JSONException e) {
+                    throw new IOException("Error : " + e);
+                }
+
+                JSONArray results;
+                try {
+                    results = data.getJSONArray("results");
+                } catch (JSONException e) {
+                    throw new IOException("Error : " + e);
+                }
+
+                JSONObject result;
+                try {
+                    result = results.getJSONObject(0);
+                } catch (JSONException e) {
+                    throw new IOException("Error : " + e);
+                }
+
+                JSONArray sections;
+                try {
+                    sections = result.getJSONArray("sections");
+                } catch (JSONException e) {
+                    throw new IOException("Error : " + e);
+                }
+
+                for (int i = 0; i < sections.length(); i++) {
+                    JSONObject iter;
+                    try {
+                        iter = sections.getJSONObject(i);
+                    } catch (JSONException e) {
+                        throw new IOException("Error : " + e);
+                    }
+
+                    JSONArray sections2;
+                    try {
+                        sections2 = iter.getJSONArray("sections");
+                    } catch (JSONException e) {
+                        throw new IOException("Error : " + e);
+                    }
+
+                    for (int j = 0; j < sections2.length(); j++) {
+                        JSONObject iter2;
+                        try {
+                            iter2 = sections.getJSONObject(j);
+                        } catch (JSONException e) {
+                            throw new IOException("Error : " + e);
+                        }
+
+                        JSONArray real_estates;
+                        try {
+                            real_estates = iter2.getJSONArray("real_estates");
+                        } catch (JSONException e) {
+                            throw new IOException("Error : " + e);
+                        }
+
+                        for (int k = 0; k < real_estates.length(); k++) {
+                            JSONObject iter3;
+                            try {
+                                iter3 = real_estates.getJSONObject(k);
+                            } catch (JSONException e) {
+                                throw new IOException("Error : " + e);
+                            }
+
+                            try {
+                                mReadEstates.append(iter3.getString("own_type.name") + " собственность: " +
+                                    iter3.getString("type.name") + " размером " + iter3.getInt("square") + " м2\n");
+                            } catch (JSONException e) {
+                                throw new IOException("Error : " + e);
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        return mReadEstates.toString();
+    }
+
+    boolean mUpdateSuccess;
+
+    public boolean update_rankings(int id, String name) {
+        OkHttpClient client = new OkHttpClient();
+
+        Request request = new Request.Builder()
+                .url("http://34.245.212.90:5000/api/update_ranking?id=" + id + "&name=" + name + "&answered=true")
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Request request, IOException e) {
+                e.printStackTrace();
+                Log.d(TAG, "Request Failed.");
+            }
+
+            @Override
+            public void onResponse(Response response) throws IOException {
+                if (!response.isSuccessful()) {
+                    throw new IOException("Error : " + response);
+                } else {
+                    Log.d(TAG, "Request Successful.");
+                }
+
+                String data = response.body().string();
+
+                mUpdateSuccess = data.equals("\"Ranking successfully updated\"");
+            }
+        });
+
+        return mUpdateSuccess;
+    }
+
+    ArrayList<Pair<String,Integer>> mRanking = new ArrayList<>();
+
+    public ArrayList<Pair<String,Integer>> get_ranking() {
+        OkHttpClient client = new OkHttpClient();
+
+        Request request = new Request.Builder()
+                .url("http://34.245.212.90:5000/api/ranking")
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Request request, IOException e) {
+                e.printStackTrace();
+                Log.d(TAG, "Request Failed.");
+            }
+
+            @Override
+            public void onResponse(Response response) throws IOException {
+                if (!response.isSuccessful()) {
+                    throw new IOException("Error : " + response);
+                } else {
+                    Log.d(TAG, "Request Successful.");
+                }
+
+                JSONArray data;
+                try {
+                    data = new JSONArray(response.body().string());
+                } catch (JSONException e) {
+                    throw new IOException("Error : " + e);
+                }
+
+                for (int i = 0; i < data.length(); i++) {
+                    try {
+                        mRanking.add(new Pair<>(data.getJSONArray(i).getString(0),
+                                                data.getJSONArray(i).getInt(1)));
+                    } catch (JSONException e) {
+                        throw new IOException("Error : " + e);
+                    }
+                }
+            }
+        });
+
+        return mRanking;
     }
 }
