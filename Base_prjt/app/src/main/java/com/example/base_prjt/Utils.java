@@ -18,9 +18,9 @@ import java.util.ArrayList;
 import static com.ramotion.paperonboarding.utils.PaperOnboardingEngineDefaults.TAG;
 
 public class Utils {
-    int mId;
+    static int mId;
 
-    public int get_id(String name) {
+    static public int get_id(String name) {
         OkHttpClient client = new OkHttpClient();
 
         Request request = new Request.Builder()
@@ -74,9 +74,9 @@ public class Utils {
         return mId;
     }
 
-    ArrayList<Pair<String,Integer>> mSearchResult = new ArrayList<>();
+    static ArrayList<Pair<String,Integer>> mSearchResult = new ArrayList<>();
 
-    public ArrayList<Pair<String,Integer>> get_search_result(final String name) {
+    static public ArrayList<Pair<String,Integer>> get_search_result(final String name) {
         OkHttpClient client = new OkHttpClient();
 
         Request request = new Request.Builder()
@@ -126,9 +126,9 @@ public class Utils {
         return mSearchResult;
     }
 
-    int mSum;
+    static int mSum;
 
-    public int get_incomes(String name) {
+    static public int get_incomes(String name) {
         mSum = 0;
 
         OkHttpClient client = new OkHttpClient();
@@ -234,9 +234,9 @@ public class Utils {
         return mSum / 12;
     }
 
-    StringBuilder mVehivles;
+    static StringBuilder mVehivles;
 
-    public String get_vehicles(String name) {
+    static public String get_vehicles(String name) {
         OkHttpClient client = new OkHttpClient();
 
         Request request = new Request.Builder()
@@ -342,9 +342,9 @@ public class Utils {
         return mVehivles.toString();
     }
 
-    StringBuilder mSavings;
+    static StringBuilder mSavings;
 
-    public String get_savings(String name) {
+    static public String get_savings(String name) {
         OkHttpClient client = new OkHttpClient();
 
         Request request = new Request.Builder()
@@ -442,9 +442,9 @@ public class Utils {
         return mSavings.toString();
     }
 
-    StringBuilder mReadEstates;
+    static StringBuilder mReadEstates;
 
-    public String get_real_estates(String name) {
+    static public String get_real_estates(String name) {
         OkHttpClient client = new OkHttpClient();
 
         Request request = new Request.Builder()
@@ -547,9 +547,9 @@ public class Utils {
         return mReadEstates.toString();
     }
 
-    boolean mUpdateSuccess;
+    static boolean mUpdateSuccess;
 
-    public boolean update_rankings(int id, String name) {
+    static public boolean update_rankings(int id, String name) {
         OkHttpClient client = new OkHttpClient();
 
         Request request = new Request.Builder()
@@ -580,9 +580,9 @@ public class Utils {
         return mUpdateSuccess;
     }
 
-    ArrayList<Pair<String,Integer>> mRanking = new ArrayList<>();
+    static ArrayList<Pair<String,Integer>> mRanking = new ArrayList<>();
 
-    public ArrayList<Pair<String,Integer>> get_ranking() {
+    static public ArrayList<Pair<String,Integer>> get_ranking() {
         OkHttpClient client = new OkHttpClient();
 
         Request request = new Request.Builder()
