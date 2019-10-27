@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="100">
+
+    <TextView
+        android:gravity="center"
+        android:textAlignment="center"
+        android:text="Lol1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/ranking_rank"
+        android:layout_weight="40"
+        />
+
+    <TextView
+        android:gravity="center"
+        android:textAlignment="center"
+        android:text="Lol2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/ranking_name"
+        android:layout_weight="20"
+        />
+
+    <TextView
+        android:gravity="center"
+        android:textAlignment="center"
+        android:text="Lol3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/ranking_percent"
+        android:layout_weight="40"
+        />
+
+</LinearLayout>
