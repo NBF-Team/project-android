@@ -25,6 +25,7 @@ public class Utils {
 
         try {
             url = new URL(urlToRead);
+            System.out.println("URL is OK => " + url);
         } catch (MalformedURLException e) {
             System.out.println("Malformed URL: " + e);
             return null;
@@ -34,6 +35,7 @@ public class Utils {
 
         try {
             conn = (HttpURLConnection) url.openConnection();
+            System.out.println("Connection is normally opened => " + conn);
         } catch (IOException e) {
             System.out.println("Could not open connection: " + e);
             return null;
@@ -43,6 +45,7 @@ public class Utils {
 
         try {
             conn.setRequestMethod("GET");
+            System.out.println("GET request is normally sent");
         } catch (ProtocolException e) {
             System.out.println("Could not send get request: " + e);
             return null;
@@ -50,6 +53,7 @@ public class Utils {
 
         try {
             rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            System.out.println("Buffer reader is OK => " + rd);
         } catch (IOException e) {
             System.out.println("Could not buffered readered: " + e);
             return null;
@@ -60,6 +64,7 @@ public class Utils {
             while ((line = rd.readLine()) != null) {
                 result.append(line);
             }
+            System.out.println("Line is correct => " + line);
         } catch (IOException e) {
             System.out.println("Could not append lines to result: " + e);
             return null;
