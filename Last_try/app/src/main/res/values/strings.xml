@@ -1,0 +1,27 @@
+<resources>
+    <string name="app_name">Chinder</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+    <string name="tab_text_1">Tab 1</string>
+    <string name="tab_text_2">Tab 2</string>
+    <string name="first_page_1">Hello!</string>
+    <string name="first_page_2">Chinder</string>
+    <string name="button_gt">Go play!</string>
+    <string name="todo">TODO</string>
+    <string name="last_btn">Confirm</string>
+    <string name="point1">Search</string>
+    <string name="point2">Rating</string>
+    <string name="point3">Main</string>
+    <string name="title_activity_scrolling">ScrollingActivity</string>
+    <string name="top">Топ угадаваемых</string>
+    <string name="ranking_rank">Ранг</string>
+    <string name="ranking_name">Имя</string>
+    <string name="ranking_percent">Угадали</string>
+    <string name="search">Искать месячную прибыли чиновника</string>
+
+
+</resources>

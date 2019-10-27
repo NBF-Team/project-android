@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">fluid-slider</string>
+    <declare-styleable name="FluidSlider">
+        <attr format="color" name="bar_color"/>
+        <attr format="color" name="bubble_color"/>
+        <attr format="color" name="bar_text_color"/>
+        <attr format="color" name="bubble_text_color"/>
+        <attr format="string" name="start_text"/>
+        <attr format="string" name="end_text"/>
+        <attr format="dimension" name="text_size"/>
+        <attr format="integer" name="duration"/>
+        <!-- Initial position in range from 0.0 to 1.0 -->
+        <attr format="float" name="initial_position"/>
+        <attr format="enum" name="size">
+            <enum name="small" value="0"/>
+            <enum name="normal" value="1"/>
+        </attr>
+    </declare-styleable>
+</resources>
