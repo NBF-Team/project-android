@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="100">
+
+    <TextView
+        android:gravity="center"
+        android:textAlignment="center"
+        android:text="Nb"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/search_rank"
+        android:layout_weight="40"
+        />
+
+    <TextView
+        android:gravity="center"
+        android:textAlignment="center"
+        android:text="Name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/search_name"
+        android:layout_weight="30"
+        />
+
+    <TextView
+        android:gravity="center"
+        android:textAlignment="center"
+        android:text="Income"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/search_income"
+        android:layout_weight="30"
+        />
+
+</LinearLayout>
