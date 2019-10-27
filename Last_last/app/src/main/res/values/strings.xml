@@ -7,5 +7,12 @@
     <string name="first_page_2">Chinder</string>
     <string name="button_gt">Go play!</string>
     <string name="todo">TODO</string>
+    <string name="title_activity_scrolling">ScrollingActivity</string>
+    <string name="action_settings">Trollol</string>
+    <string name="top">Топ угадаваемых</string>
+    <string name="ranking_rank">Ранг</string>
+    <string name="ranking_name">Имя</string>
+    <string name="ranking_percent">Угадали</string>
+    <string name="search">Искать месячную прибыли чиновника</string>
 
 </resources>
